@@ -22,13 +22,14 @@ jobs:
           # 設定 git 使用者
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-
+          
           # 取得最近 5 次 commit 訊息
-          RECENT=$(git log -5 --pretty=format:"- %h %s (%an)")
-
+          RECENT=$(git log -5 --pretty=format:"* %h %s (%an)")
+          
           # 更新 README 指定區塊
-          sed -i "/<!-- BEGIN RECENT_ACTIVITY -->/,/<!-- END RECENT_ACTIVITY -->/c\
-<!-- BEGIN RECENT_ACTIVITY -->\n$RECENT\n<!-- END RECENT_ACTIVITY -->" README.md
-
+          sed -i '/<!-- BEGIN RECENT_ACTIVITY -->/,/<!-- END RECENT_ACTIVITY -->/c\<!-- BEGIN RECENT_ACTIVITY -->\n'"$RECENT"'\n<!-- END RECENT_ACTIVITY -->' README.md
+          
+          # 新增並提交 README.md 改動
           git add README.md
-          git commit -m "Update README wi
+          git commit -m "Update README with recent activity"
+          git push
