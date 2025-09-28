@@ -26,9 +26,18 @@ jobs:
           # 取得最近 5 次 commit 訊息
           RECENT=$(git log -5 --pretty=format:"- %h %s (%an)")
 
-          # 更新 README 指定區塊
-          sed -i "/<!-- BEGIN RECENT_ACTIVITY -->/,/<!-- END RECENT_ACTIVITY -->/c\
-<!-- BEGIN RECENT_ACTIVITY -->\n$RECENT\n<!-- END RECENT_ACTIVITY -->" README.md
+          # 使用 awk 更新 README 指定區塊
+          awk -v new="$RECENT" '
+            /<!-- BEGIN RECENT_ACTIVITY -->/{
+              print; 
+              print new; 
+              getline; 
+              while(!/<!-- END RECENT_ACTIVITY -->/){getline} 
+            }
+            {print}
+          ' README.md > README.tmp && mv README.tmp README.md
 
+          # 提交並推送
           git add README.md
-          git commit -m "Update README wi
+          git commit -m "Update README with recent activity" || echo "No changes to commit"
+          git push
